@@ -1,11 +1,17 @@
-const express = require("express");
+const express = require('express');
+const sequelize = require('./config/database');
+const authRoutes = require('./routes/authRoutes');
+const productRoutes = require('./routes/productRoutes');
+
 const app = express();
-const port = 3000;
+app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Hello World!!!");
-});
+sequelize.sync()
+    .then(() => console.log('Database synced'))
+    .catch(err => console.error(err));
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}!`);
-});
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
